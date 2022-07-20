@@ -1,0 +1,5 @@
+bucket = "tfstate-000000000000"
+key = "app-auto-scaling/terraform.tfstate"
+region = "us-east-1"
+profile = "default"
+dynamodb_table = "tflock-tfstate-000000000000"
