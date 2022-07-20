@@ -49,3 +49,27 @@ resource "aws_subnet" "this" {
 #   availability_zone = "${var.aws_region}b"
 #   tags = merge(local.common_tags, {Name = "Private B"})
 # }
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.this.id
+
+  route {
+    cidr_block = "0.0.0.0/0" # # qualquer um na internet tem acesso 
+    gateway_id = aws_internet_gateway.this.id
+  } 
+
+  tags = merge(local.common_tags, {Name = "Public"})
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.this.id
+
+  tags = merge(local.common_tags, {Name = "Public"})
+}
+
+resource "aws_route_table_association" "this" {
+  for_each = { for k, v in aws_subnet.this : v.tags.Name => v.id }
+
+  subnet_id = each.value
+  route_table_id = substr(each.value, 0, 3) == "Pub" ? aws_route_table.public.id : aws_route_table.private.id
+}
